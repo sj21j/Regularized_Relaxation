@@ -1,6 +1,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaForCausalLM
 import torch
 import torch.nn as nn
+import csv
 
 def load_model_and_tokenizer(model_path, tokenizer_path=None, device="cuda:0", **kwargs):
     model = (
@@ -74,3 +75,10 @@ def calc_ce_loss(model, embeddings_user, embeddings_adv, embeddings_target, targ
 
 def adjust_learning_rate(lr, iteration, decay_rate=0.99):
     return lr * (decay_rate ** iteration)
+
+def parse_csv(input_file):
+    with open(input_file, mode='r') as file:
+        csv_reader = csv.reader(file)
+        next(csv_reader)  # Skip the header row
+        rows = list(csv_reader)
+        return rows
