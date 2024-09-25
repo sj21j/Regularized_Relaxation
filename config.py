@@ -13,7 +13,8 @@ gcgconfig = GCGConfig(
 )
 
 #MODEL PATHS
-llama2_path = "../DIR/llama-2/llama/Llama-2-7b-chat-hf"
+llama2_path = "../DIR/falcon-7b-instruct"
+# llama2_path = "../DIR/llama-2/llama/Llama-2-7b-chat-hf"
 
 #DATASET PATHS
 advbench = "./data/AdvBench/harmful_behaviors.csv"

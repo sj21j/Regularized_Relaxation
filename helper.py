@@ -6,14 +6,14 @@ import csv
 def load_model_and_tokenizer(model_path, tokenizer_path=None, device="cuda:0", **kwargs):
     model = (
         AutoModelForCausalLM.from_pretrained(
-            model_path, torch_dtype=torch.float16, trust_remote_code=True, **kwargs
+            model_path, torch_dtype=torch.float16, trust_remote_code=False, **kwargs
         ).to(device).eval()
     )
 
     tokenizer_path = model_path if tokenizer_path is None else tokenizer_path
 
     tokenizer = AutoTokenizer.from_pretrained(
-        tokenizer_path, trust_remote_code=True, use_fast=False
+        tokenizer_path, trust_remote_code=False, use_fast=False
     )
 
     if "llama-2" in tokenizer_path:

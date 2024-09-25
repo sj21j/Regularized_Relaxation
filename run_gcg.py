@@ -1,6 +1,7 @@
 import config
 import json
 from helper import load_model_and_tokenizer, get_tokens, parse_csv
+from transformers import LlamaForCausalLM
 import nanogcg
 from behavior import Behavior
 import argparse
@@ -20,7 +21,12 @@ def main(input_file, output_file, dataset_name, num_behaviors, behavior_start=0)
         user_prompt, target = row
         print(row)
         try:
-            result = nanogcg.run(model, tokenizer, user_prompt, target, gcgconfig)
+            if isinstance(model, LlamaForCausalLM):
+                messages = user_prompt
+            else:
+                messages = [{"role": "user", "content": user_prompt}]
+                gcgconfig.filter_ids = False
+            result = nanogcg.run(model, tokenizer, messages, target, gcgconfig)
         except RuntimeError as e:
             if 'CUDA out of memory' in str(e):
                 print("CUDA out of memory. Clearing cache and retrying...")
@@ -29,18 +35,27 @@ def main(input_file, output_file, dataset_name, num_behaviors, behavior_start=0)
             else:
                 raise e
         final_string = user_prompt + " " + result.best_string
-        final_string_ids = get_tokens(final_string, tokenizer, config.device)
-        generated_output = model.generate(
-            final_string_ids.unsqueeze(0),
-            max_length=200,
-            pad_token_id=tokenizer.pad_token_id,
-            do_sample=False,
-            top_p=None,
-            top_k=None,
-            temperature=None
-        )
-        generated_output_string = tokenizer.decode(generated_output[0][1:].cpu().numpy()).strip()[len(final_string):]
+        if isinstance(model, LlamaForCausalLM):
+            final_string_ids = get_tokens(final_string, tokenizer, config.device)
+            generated_output = model.generate(
+                final_string_ids.unsqueeze(0),
+                max_length=200,
+                pad_token_id=tokenizer.pad_token_id,
+                do_sample=False,
+                top_p=None,
+                top_k=None,
+                temperature=None
+            )
+            generated_output_string = tokenizer.decode(generated_output[0][1:].cpu().numpy()).strip()[len(final_string):]
+
+        else:
+            messages[-1]["content"] = final_string
+            input = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
+            output = model.generate(input, do_sample=False, max_new_tokens=200)
+            generated_output_string = tokenizer.batch_decode(output[:, input.shape[1]:], skip_special_tokens=True)[0]
+        
         behavior = Behavior(user_prompt, result.best_string, generated_output_string, "", "")
+        
         with open(output_file, 'a') as f:
             f.write(json.dumps(behavior.to_dict()) + '\n')
         f.close()
