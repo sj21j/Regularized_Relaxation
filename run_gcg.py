@@ -27,6 +27,10 @@ def main(input_file, output_file, dataset_name, num_behaviors, behavior_start=0)
                 messages = [{"role": "user", "content": user_prompt}]
                 gcgconfig.filter_ids = False
             result = nanogcg.run(model, tokenizer, messages, target, gcgconfig)
+            dump_file = output_file.replace('.jsonl', '_dump.jsonl')
+            with open(dump_file, 'a') as d:
+                d.write(json.dumps(result.__dict__) + '\n')
+            d.close()
         except RuntimeError as e:
             if 'CUDA out of memory' in str(e):
                 print("CUDA out of memory. Clearing cache and retrying...")
