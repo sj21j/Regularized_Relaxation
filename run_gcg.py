@@ -49,9 +49,12 @@ def main(input_file, output_file, dataset_name, num_behaviors, behavior_start=0)
             generated_output_string = tokenizer.decode(generated_output[0][1:].cpu().numpy()).strip()[len(final_string):]
 
         else:
+            if tokenizer.pad_token_id is None:
+                tokenizer.pad_token_id = tokenizer.eos_token_id
             messages[-1]["content"] = final_string
             input = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
-            output = model.generate(input, do_sample=False, max_new_tokens=200)
+            attention_mask = (input != tokenizer.pad_token_id).long()
+            output = model.generate(input, do_sample=False, max_new_tokens=200, attention_mask=attention_mask)
             generated_output_string = tokenizer.batch_decode(output[:, input.shape[1]:], skip_special_tokens=True)[0]
         
         behavior = Behavior(user_prompt, result.best_string, generated_output_string, "", "")
