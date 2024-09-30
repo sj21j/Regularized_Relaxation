@@ -7,4 +7,5 @@ relaxed-regularization-test.ipynb
 run_gcg.ipynb
 nohup.out
 results/
+dumps/
 !results/test.jsonl
