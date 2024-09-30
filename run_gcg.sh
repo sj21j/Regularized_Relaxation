@@ -9,17 +9,31 @@ VICUNA="Vicuna"
 MPT="MPT"
 METHOD="GCG"
 NUM_BEHAVIORS=50
-# INPUT_FILE="/home/samuel/Research/reg_relax/data/${DATASETS[0]}/harmful_behaviors.csv"
-# OUTPUT_FILE="/home/samuel/Research/reg_relax/results/${METHOD}_${DATASET_NAME}_${MODEL}.jsonl"
 
 python run_gcg.py \
-    --input_file "/home/samuel/Research/reg_relax/data/${ADVBENCH}/harmful_behaviors.csv" \
-    --output_file "/home/samuel/Research/reg_relax/results/${METHOD}_${ADVBENCH}_${MPT}.jsonl" \
+    --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
+    --output_file "./results/test_${METHOD}_${ADVBENCH}_${MPT}.jsonl" \
+    --model "$MPT" \
     --dataset_name "$ADVBENCH" \
     --num_behaviors "$NUM_BEHAVIORS"
 
-# python run_gcg.py \
-#     --input_file "/home/samuel/Research/reg_relax/data/${ADVBENCH}/harmful_behaviors.csv" \
-#     --output_file "/home/samuel/Research/reg_relax/results/${METHOD}_${ADVBENCH}_${MODEL}.jsonl" \
-#     --dataset_name "$ADVBENCH" \
-#     --num_behaviors "$NUM_BEHAVIORS"
+python run_gcg.py \
+    --input_file "./data/${HARMBENCH}/harmful_behaviors.csv" \
+    --output_file "./results/test_${METHOD}_${HARMBENCH}_${MPT}.jsonl" \
+    --model "$MPT" \
+    --dataset_name "$HARMBENCH" \
+    --num_behaviors "$NUM_BEHAVIORS"
+
+python run_gcg.py \
+    --input_file "./data/${JAILBREAKBENCH}/harmful_behaviors.csv" \
+    --output_file "./results/test_${METHOD}_${JAILBREAKBENCH}_${MPT}.jsonl" \
+    --model "$MPT" \
+    --dataset_name "$JAILBREAKBENCH" \
+    --num_behaviors "$NUM_BEHAVIORS"
+
+python run_gcg.py \
+    --input_file "./data/${MALICIOUSINSTRUCT}/harmful_behaviors.csv" \
+    --output_file "./results/test_${METHOD}_${MALICIOUSINSTRUCT}_${MPT}.jsonl" \
+    --model "$MPT" \
+    --dataset_name "$MALICIOUSINSTRUCT" \
+    --num_behaviors "$NUM_BEHAVIORS"

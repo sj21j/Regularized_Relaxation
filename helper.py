@@ -2,6 +2,19 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaForCausalLM
 import torch
 import torch.nn as nn
 import csv
+import config
+
+def get_model_path(model_name):
+    if model_name == "Falcon":
+        return config.falcon_path
+    elif model_name == "Llama2":
+        return config.llama2_path
+    elif model_name == "MPT":
+        return config.mpt_path
+    elif model_name == "Vicuna":
+        return config.vicuna_path
+    else:
+        raise ValueError(f"Unknown model name: {model_name}")
 
 def load_model_and_tokenizer(model_path, tokenizer_path=None, device="cuda:0", **kwargs):
     model = (
@@ -9,19 +22,24 @@ def load_model_and_tokenizer(model_path, tokenizer_path=None, device="cuda:0", *
             model_path, torch_dtype=torch.float16, trust_remote_code=False, **kwargs
         ).to(device).eval()
     )
+    if model_path == config.mpt_path:
+        tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neox-20b")
+        tokenizer.chat_template = "{% if messages[0]['role'] == 'system' %}{% set loop_messages = messages[1:] %}{% set system_message = messages[0]['content'] %}{% elif not 'system' in messages[0]['role'] %}{% set loop_messages = messages %}{% set system_message = 'A conversation between a user and an LLM-based AI assistant. The assistant gives helpful and honest answers.' %}{% else %}{% set loop_messages = messages %}{% set system_message = false %}{% endif %}{% for message in loop_messages %}{% if loop.index0 == 0 %}{% if system_message != false %}{{ '<|im_start|>system\n' + system_message.strip() + '\n'}}{% endif %}{{ '<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' }}{% else %}{{ '\n' + '<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' }}{% endif %}{% if (add_generation_prompt == true and loop.last) %}{{ '\n' + '<|im_start|>' + 'assistant' + '\n' }}{% elif (message['role'] == 'assistant') %}{% endif %}{% endfor %}"
 
-    tokenizer_path = model_path if tokenizer_path is None else tokenizer_path
+    else:
+        tokenizer_path = model_path if tokenizer_path is None else tokenizer_path
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        tokenizer_path, trust_remote_code=False, use_fast=False
-    )
+        tokenizer = AutoTokenizer.from_pretrained(
+            tokenizer_path, trust_remote_code=False, use_fast=False
+        )
 
-    if "llama-2" in tokenizer_path:
-        tokenizer.pad_token = tokenizer.unk_token
-        tokenizer.padding_side = "left"
+        if "llama-2" in tokenizer_path:
+            tokenizer.pad_token = tokenizer.unk_token
+            tokenizer.padding_side = "left"
+        if 'falcon' in tokenizer_path:
+            tokenizer.padding_side = 'left'
     if not tokenizer.pad_token:
         tokenizer.pad_token = tokenizer.eos_token
-
     return model, tokenizer
 
 def get_embedding_matrix(model):
