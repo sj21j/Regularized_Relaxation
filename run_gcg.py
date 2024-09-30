@@ -1,7 +1,7 @@
 import config
 import json
 from helper import load_model_and_tokenizer, get_tokens, parse_csv
-from transformers import LlamaForCausalLM
+from transformers import LlamaForCausalLM, MptForCausalLM
 import nanogcg
 from behavior import Behavior
 import argparse
@@ -21,7 +21,7 @@ def main(input_file, output_file, dataset_name, num_behaviors, behavior_start=0)
         user_prompt, target = row
         print(row)
         try:
-            if isinstance(model, LlamaForCausalLM):
+            if isinstance(model, LlamaForCausalLM) or isinstance(model, MptForCausalLM):
                 messages = user_prompt
             else:
                 messages = [{"role": "user", "content": user_prompt}]
@@ -39,7 +39,7 @@ def main(input_file, output_file, dataset_name, num_behaviors, behavior_start=0)
             else:
                 raise e
         final_string = user_prompt + " " + result.best_string
-        if isinstance(model, LlamaForCausalLM):
+        if isinstance(model, LlamaForCausalLM)  or isinstance(model, MptForCausalLM):
             final_string_ids = get_tokens(final_string, tokenizer, config.device)
             generated_output = model.generate(
                 final_string_ids.unsqueeze(0),
