@@ -2,6 +2,7 @@ llmattacks.yml
 __pycache__/
 relaxed_regularization-08-19-metareview.py
 relaxed-regularization-submission-rms.ipynb
+relaxed-regularization-submission-test.ipynb
 relaxed-regularization-05-31multiple.ipynb
 relaxed-regularization-test.ipynb
 run_gcg.ipynb
@@ -9,3 +10,4 @@ nohup.out
 results/
 dumps/
 !results/test.jsonl
+losses.jsonl
