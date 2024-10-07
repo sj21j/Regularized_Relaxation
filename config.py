@@ -1,15 +1,24 @@
 device: str = "cuda:0"
 seed: int = 42
 adv_string_init: str = "! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !"
+num_steps: int = 250
 
 #GCG Config
 from nanogcg import GCGConfig
 gcgconfig = GCGConfig(
-    num_steps=250,
+    num_steps=num_steps,
     topk=256,
     seed=seed,
     optim_str_init=adv_string_init,
     verbosity="WARNING",
+)
+
+from rrconfig import RRConfig
+rrconfig = RRConfig(
+    num_steps=num_steps,
+    optim_str_init=adv_string_init,
+    seed=seed,
+    weight_decay=0.05,
 )
 
 #MODEL PATHS

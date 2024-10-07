@@ -1,4 +1,4 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaForCausalLM
+from transformers import AutoModelForCausalLM, AutoTokenizer, LlamaForCausalLM, FalconForCausalLM, MistralForCausalLM, MptForCausalLM
 import torch
 import torch.nn as nn
 import csv
@@ -54,6 +54,12 @@ def load_model_and_tokenizer(model_path, tokenizer_path=None, device="cuda:0", *
 def get_embedding_matrix(model):
     if isinstance(model, LlamaForCausalLM):
         return model.model.embed_tokens.weight
+    if isinstance(model, FalconForCausalLM):
+        return model.get_input_embeddings().weight.data
+    if isinstance(model, MistralForCausalLM):
+        return model.model.embed_tokens.weight
+    if isinstance(model, MptForCausalLM):
+        return model.get_input_embeddings().weight.data
     else:
         raise ValueError(f"Unknown model type: {type(model)}")
     
@@ -78,7 +84,7 @@ def get_nonascii_toks(tokenizer, device):
         return s.isascii() and s.isprintable()
 
     non_ascii_toks = []
-    for i in range(3, tokenizer.vocab_size):
+    for i in range(0, tokenizer.vocab_size):
         if not is_ascii(tokenizer.decode([i])):
             non_ascii_toks.append(i)
     
@@ -92,6 +98,14 @@ def get_nonascii_toks(tokenizer, device):
         non_ascii_toks.append(tokenizer.unk_token_id)
     
     return torch.tensor(non_ascii_toks).to(device)
+
+def find_closest_embeddings(embeddings_adv, embed_weights, device, allow_non_ascii=True, non_ascii_toks=None):
+    distances = torch.cdist(embeddings_adv, embed_weights, p=2)
+    if not allow_non_ascii:
+        distances[0][:, non_ascii_toks.to(device)] = float("inf")
+    closest_distances, closest_indices = torch.min(distances, dim=-1)
+    closest_embeddings = embed_weights[closest_indices]
+    return closest_distances, closest_indices, closest_embeddings
 
 def calc_ce_loss(model, embeddings_user, embeddings_adv, embeddings_target, targets):
     full_embeddings = torch.hstack([embeddings_user, embeddings_adv, embeddings_target]).to(dtype=torch.float16)
