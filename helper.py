@@ -29,7 +29,7 @@ def load_model_and_tokenizer(model_path, tokenizer_path=None, device="cuda:0", *
     else:
         model = (
             AutoModelForCausalLM.from_pretrained(
-                model_path, torch_dtype=torch.bfloat16, trust_remote_code=False, **kwargs
+                model_path, torch_dtype=torch.float16, trust_remote_code=False, **kwargs
             ).to(device).eval()
         )
     if model_path == config.mpt_path:

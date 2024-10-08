@@ -24,7 +24,7 @@ import torch.nn.functional as F
 
 # A safer version of the calc_loss function.
 def calc_loss(model, embeddings_user, embeddings_adv, embeddings_target, targets):
-    full_embeddings = torch.hstack([embeddings_user, embeddings_adv, embeddings_target])
+    full_embeddings = torch.hstack([embeddings_user, embeddings_adv, embeddings_target]).to(dtype=model.dtype)
     
     # Check for NaN or extreme values in the embeddings
     if torch.isnan(full_embeddings).any():
@@ -289,7 +289,7 @@ def run(model, tokenizer, messages, target, pgdconfig):
             break
     # End of optimizations
     # Write to CSV file
-    df.to_csv(csv_filename, index=False)            
+    # df.to_csv(csv_filename, index=False)            
     # Create a Result object with the provided values
     best_loss = best_disc_loss
     best_string = best_adv_suffix
