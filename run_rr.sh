@@ -18,33 +18,33 @@ NUM_BEHAVIORS=2
 #     --dataset_name "$ADVBENCH" \
 #     --num_behaviors "$NUM_BEHAVIORS"
 
+# python run_rr.py \
+#     --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
+#     --output_file "./results/${METHOD}_${ADVBENCH}_${VICUNA}.jsonl" \
+#     --model "$VICUNA" \
+#     --dataset_name "$ADVBENCH" \
+#     --num_behaviors "$NUM_BEHAVIORS"
+
 python run_rr.py \
     --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
-    --output_file "./results/${METHOD}_${ADVBENCH}_${VICUNA}.jsonl" \
-    --model "$VICUNA" \
+    --output_file "./results/${METHOD}_${ADVBENCH}_${FALCON}.jsonl" \
+    --model "$FALCON" \
     --dataset_name "$ADVBENCH" \
     --num_behaviors "$NUM_BEHAVIORS"
 
-# python run_rr.py \
-#     --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
-#     --output_file "./results/${METHOD}_${ADVBENCH}_${FALCON}.jsonl" \
-#     --model "$FALCON" \
-#     --dataset_name "$ADVBENCH" \
-#     --num_behaviors "$NUM_BEHAVIORS"
+python run_rr.py \
+    --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
+    --output_file "./results/${METHOD}_${ADVBENCH}_${MPT}.jsonl" \
+    --model "$MPT" \
+    --dataset_name "$ADVBENCH" \
+    --num_behaviors "$NUM_BEHAVIORS"
 
-# python run_rr.py \
-#     --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
-#     --output_file "./results/${METHOD}_${ADVBENCH}_${MPT}.jsonl" \
-#     --model "$MPT" \
-#     --dataset_name "$ADVBENCH" \
-#     --num_behaviors "$NUM_BEHAVIORS"
-
-# python run_rr.py \
-#     --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
-#     --output_file "./results/${METHOD}_${ADVBENCH}_${MISTRAL}.jsonl" \
-#     --model "$MISTRAL" \
-#     --dataset_name "$ADVBENCH" \
-#     --num_behaviors "$NUM_BEHAVIORS"
+python run_rr.py \
+    --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
+    --output_file "./results/${METHOD}_${ADVBENCH}_${MISTRAL}.jsonl" \
+    --model "$MISTRAL" \
+    --dataset_name "$ADVBENCH" \
+    --num_behaviors "$NUM_BEHAVIORS"
 
 # python run_rr.py \
 #     --input_file "./data/${HarmBench}/harmful_behaviors.csv" \
