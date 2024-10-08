@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import csv
 import config
+# from safe.rlhf import AutoModelForScore
 
 def get_model_path(model_name):
     if model_name == "Falcon":
@@ -108,7 +109,7 @@ def find_closest_embeddings(embeddings_adv, embed_weights, device, allow_non_asc
     return closest_distances, closest_indices, closest_embeddings
 
 def calc_ce_loss(model, embeddings_user, embeddings_adv, embeddings_target, targets):
-    full_embeddings = torch.hstack([embeddings_user, embeddings_adv, embeddings_target]).to(dtype=torch.float16)
+    full_embeddings = torch.hstack([embeddings_user, embeddings_adv, embeddings_target]).to(dtype=model.dtype)
     logits = model(inputs_embeds=full_embeddings).logits
     loss_slice_start = len(embeddings_user[0]) + len(embeddings_adv[0])
     loss = nn.CrossEntropyLoss()(logits[0, loss_slice_start - 1 : -1, :], targets)
@@ -123,3 +124,18 @@ def parse_csv(input_file):
         next(csv_reader)  # Skip the header row
         rows = list(csv_reader)
         return rows
+
+# def load_helpfulness_evaluator(model_path, device):
+#     model = AutoModelForCausalLM.from_pretrained(
+#         model_path, torch_dtype=torch.bfloat16
+#     ).to(device).eval()
+    
+#     tokenizer = AutoTokenizer.from_pretrained(model_path)
+#     return model, tokenizer
+
+# def load_harmfulness_evaluator(model_path, device):
+#     cost_model = AutoModelForScore.from_pretrained(
+#         model_path, torch_dtype=torch.bfloat16
+#     ).to(device).eval()
+#     cost_tokenizer = AutoTokenizer.from_pretrained(model_path)
+#     return cost_model, cost_tokenizer
