@@ -44,6 +44,7 @@ def main(input_file, output_file, model, dataset_name, num_behaviors, behavior_s
         attention_mask = torch.ones(final_string_ids.shape, device=config.device)
         generated_output = model.generate(
             final_string_ids.unsqueeze(0),
+            attention_mask=attention_mask.unsqueeze(0),
             max_length=200,
             pad_token_id=tokenizer.pad_token_id,
             do_sample=False,
@@ -52,9 +53,6 @@ def main(input_file, output_file, model, dataset_name, num_behaviors, behavior_s
             temperature=None
         )
         generated_output_string = tokenizer.decode(generated_output[0], skip_special_tokens = True)[len(final_string):]
-        # print(f"Generated output: \n{generated_output_string}\n\n")
-        # print(f"Final string: {final_string}")
-        # print(f"Generated output: \n{generated_output_string[len(final_string):]}\n\n")
         
         behavior = Behavior(user_prompt, result.best_string, generated_output_string, "", "")
         

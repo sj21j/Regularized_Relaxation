@@ -8,14 +8,10 @@ class PGDConfig:
   def __init__(self, 
                num_steps: int = num_steps, 
                device: str = device,
-              #  seed: int = 42,
-              #  num_tokens: int = 100,
                step_size: float = 1e-2
                ):
           self.num_steps = num_steps
-          # self.seed = seed
           self.device = device
-          # self.num_tokens = num_tokens
           self.step_size = step_size
           
 pgdconfig = PGDConfig()   
