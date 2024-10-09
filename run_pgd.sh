@@ -9,7 +9,7 @@ VICUNA="Vicuna"
 MPT="MPT"
 MISTRAL="Mistral"
 METHOD="PGD"
-NUM_BEHAVIORS=2
+NUM_BEHAVIORS=50
 
 
 python run_pgd.py \
@@ -20,24 +20,24 @@ python run_pgd.py \
     --num_behaviors "$NUM_BEHAVIORS"
 
 python run_pgd.py \
-    --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
-    --output_file "./results/${METHOD}_${ADVBENCH}_${VICUNA}.jsonl" \
-    --model "$VICUNA" \
-    --dataset_name "$ADVBENCH" \
+    --input_file "./data/${HARMBENCH}/harmful_behaviors.csv" \
+    --output_file "./results/${METHOD}_${HARMBENCH}_${LLAMA}.jsonl" \
+    --model "$LLAMA" \
+    --dataset_name "$HARMBENCH" \
     --num_behaviors "$NUM_BEHAVIORS"
 
 python run_pgd.py \
-    --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
-    --output_file "./results/${METHOD}_${ADVBENCH}_${FALCON}.jsonl" \
-    --model "$FALCON" \
-    --dataset_name "$ADVBENCH" \
+    --input_file "./data/${JAILBREAKBENCH}/harmful_behaviors.csv" \
+    --output_file "./results/${METHOD}_${JAILBREAKBENCH}_${LLAMA}.jsonl" \
+    --model "$LLAMA" \
+    --dataset_name "$JAILBREAKBENCH" \
     --num_behaviors "$NUM_BEHAVIORS"
 
 python run_pgd.py \
-    --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
-    --output_file "./results/${METHOD}_${ADVBENCH}_${MPT}.jsonl" \
-    --model "$MPT" \
-    --dataset_name "$ADVBENCH" \
+    --input_file "./data/${MALICIOUSINSTRUCT}/harmful_behaviors.csv" \
+    --output_file "./results/${METHOD}_${MALICIOUSINSTRUCT}_${LLAMA}.jsonl" \
+    --model "$LLAMA" \
+    --dataset_name "$MALICIOUSINSTRUCT" \
     --num_behaviors "$NUM_BEHAVIORS"
 
 python run_pgd.py \
@@ -46,3 +46,52 @@ python run_pgd.py \
     --model "$MISTRAL" \
     --dataset_name "$ADVBENCH" \
     --num_behaviors "$NUM_BEHAVIORS"
+
+python run_pgd.py \
+    --input_file "./data/${HARMBENCH}/harmful_behaviors.csv" \
+    --output_file "./results/${METHOD}_${HARMBENCH}_${MISTRAL}.jsonl" \
+    --model "$MISTRAL" \
+    --dataset_name "$HARMBENCH" \
+    --num_behaviors "$NUM_BEHAVIORS"
+
+python run_pgd.py \
+    --input_file "./data/${JAILBREAKBENCH}/harmful_behaviors.csv" \
+    --output_file "./results/${METHOD}_${JAILBREAKBENCH}_${MISTRAL}.jsonl" \
+    --model "$MISTRAL" \
+    --dataset_name "$JAILBREAKBENCH" \
+    --num_behaviors "$NUM_BEHAVIORS"
+
+python run_pgd.py \
+    --input_file "./data/${MALICIOUSINSTRUCT}/harmful_behaviors.csv" \
+    --output_file "./results/${METHOD}_${MALICIOUSINSTRUCT}_${MISTRAL}.jsonl" \
+    --model "$MISTRAL" \
+    --dataset_name "$MALICIOUSINSTRUCT" \
+    --num_behaviors "$NUM_BEHAVIORS"
+
+# python run_pgd.py \
+#     --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
+#     --output_file "./results/${METHOD}_${ADVBENCH}_${VICUNA}.jsonl" \
+#     --model "$VICUNA" \
+#     --dataset_name "$ADVBENCH" \
+#     --num_behaviors "$NUM_BEHAVIORS"
+
+# python run_pgd.py \
+#     --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
+#     --output_file "./results/${METHOD}_${ADVBENCH}_${FALCON}.jsonl" \
+#     --model "$FALCON" \
+#     --dataset_name "$ADVBENCH" \
+#     --num_behaviors "$NUM_BEHAVIORS"
+
+# python run_pgd.py \
+#     --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
+#     --output_file "./results/${METHOD}_${ADVBENCH}_${MPT}.jsonl" \
+#     --model "$MPT" \
+#     --dataset_name "$ADVBENCH" \
+#     --num_behaviors "$NUM_BEHAVIORS"
+
+# python run_pgd.py \
+#     --input_file "./data/${ADVBENCH}/harmful_behaviors.csv" \
+#     --output_file "./results/${METHOD}_${ADVBENCH}_${MISTRAL}.jsonl" \
+#     --model "$MISTRAL" \
+#     --dataset_name "$ADVBENCH" \
+#     --num_behaviors "$NUM_BEHAVIORS"

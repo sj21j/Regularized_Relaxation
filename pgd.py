@@ -159,11 +159,11 @@ def run(model, tokenizer, messages, target, pgdconfig):
     # PHASE_2: bool=False
     BREAK_IT: bool=False
 
-    for epoch_no in tqdm(range(num_steps)):
+    for epoch_no in range(num_steps):
         optimizer.zero_grad()
 
         embeddings_adv = (one_hot_adv @ embed_weights).unsqueeze(0)
-        cross_entropy_loss, logits = calc_loss(model, embeddings_user, embeddings_adv, embeddings_target, one_hot_target)
+        cross_entropy_loss, _ = calc_loss(model, embeddings_user, embeddings_adv, embeddings_target, one_hot_target)
         continuous_loss = cross_entropy_loss.detach().cpu().item()
         # Break the loop if loss becomes "NaN"
         if math.isnan(continuous_loss):
