@@ -1,5 +1,7 @@
+from typing import List
+
 class Result:
-    def __init__(self, best_loss: float, best_string: str, losses: list[float], strings: list[str]):
+    def __init__(self, best_loss: float, best_string: str, losses: List[float], strings: List[str]):
         self.best_loss = best_loss
         self.best_string = best_string
         self.losses = losses
