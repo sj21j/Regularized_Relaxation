@@ -35,7 +35,7 @@ def run(model, tokenizer, messages, target, rrconfig):
     embeddings_adv.requires_grad = True
     optimizer = optim.AdamW([embeddings_adv], lr=rrconfig.initial_lr, weight_decay=rrconfig.weight_decay)
     best_discrete_loss = float("inf")  # Initialize best_discrete_loss
-    best_string = None
+    best_suffix = ""
     losses = []
     suffixes = []
 
@@ -53,18 +53,11 @@ def run(model, tokenizer, messages, target, rrconfig):
         # Calculate discrete loss using the closest embeddings
         discrete_loss = calc_ce_loss(model, embeddings_user, closest_embeddings, embeddings_target, target_ids)
         # Track the lowest discrete loss and store the closest embeddings for that loss
-        # if loss.detach().cpu().numpy() < 0.001:
-        #     best_discrete_loss = discrete_loss.detach().cpu().item()
-        #     best_suffix = tokenizer.decode(closest_indices[0])
-        #     result = Result(best_discrete_loss, best_suffix, losses, suffixes)
-        #     return result
-        if iteration == 0 or discrete_loss < best_discrete_loss:
+        if loss.detach().cpu().numpy() < 0.0005:
             best_discrete_loss = discrete_loss.detach().cpu().item()
-            best_closest_embeddings = closest_embeddings.clone()
-            # print(f"Best discrete loss: {best_discrete_loss}")
-            # print(f"Best discrete loss iteration: {iteration}")
             best_suffix = tokenizer.decode(closest_indices[0])
-        # print(f"{iteration}Cont Loss: {loss.detach().cpu().item()} Disc Loss: {discrete_loss.detach().cpu().item()} Best suffix: {best_suffix}")
+            result = Result(best_discrete_loss, best_suffix, losses, suffixes)
+            return result
 
         # Apply gradient clipping to embeddings_adv
         torch.nn.utils.clip_grad_norm_([embeddings_adv], max_norm=1.0)
@@ -79,24 +72,9 @@ def run(model, tokenizer, messages, target, rrconfig):
         embeddings_adv.grad.zero_()
         losses.append(discrete_loss.detach().cpu().item())
         suffixes.append(current_suffix)
-
+    # If at the end of the iterations, the best suffix is still empty, use the last closest embedding
+    if best_suffix == "":
+        best_suffix = tokenizer.decode(closest_indices[0])
+        best_discrete_loss = discrete_loss.detach().cpu().item()
     result = Result(best_discrete_loss, best_suffix, losses, suffixes)
-    return result
-    # final_string = messages + best_suffix # + "ASSISTANT:"
-    # final_string_ids = get_tokens(final_string, tokenizer, config.device)
-    # attention_mask = torch.ones(final_string_ids.shape, device=config.device)
-    # print(f"Final string: {final_string}")
-    # # if isinstance(model, LlamaForCausalLM):
-    # generated_output = model.generate(
-    #     final_string_ids.unsqueeze(0),
-    #     attention_mask=attention_mask.unsqueeze(0),
-    #     max_length=200,
-    #     pad_token_id=tokenizer.pad_token_id,
-    #     do_sample=False,
-    #     top_p=None,
-    #     top_k=None,
-    #     temperature=None
-    # )
-    # generated_output_string = tokenizer.decode(generated_output[0], skip_special_tokens = True)#[len(final_string):].strip()
-    # print(f"Generated output: \n{generated_output_string}\n\n")
     return result

@@ -20,6 +20,7 @@ def main(input_file, output_file, model, dataset_name, num_behaviors, behavior_s
     torch.manual_seed(rrconfig.seed)
     model, tokenizer = load_model_and_tokenizer(model_path)
     rows = parse_csv(input_file)
+    output_file = output_file.replace('.jsonl', '_0005.jsonl')
     for row in rows[behavior_start:behavior_start+num_behaviors]:
         if len(row) != 2:
             continue
@@ -55,7 +56,6 @@ def main(input_file, output_file, model, dataset_name, num_behaviors, behavior_s
         generated_output_string = tokenizer.decode(generated_output[0], skip_special_tokens = True)[len(final_string):]
         
         behavior = Behavior(user_prompt, result.best_string, generated_output_string, "", "")
-        
         with open(output_file, 'a') as f:
             f.write(json.dumps(behavior.to_dict()) + '\n')
         f.close()
