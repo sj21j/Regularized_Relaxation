@@ -54,9 +54,6 @@ def main(input_file, output_file, model, dataset_name, num_behaviors, behavior_s
             temperature=None
         )
         generated_output_string = tokenizer.decode(generated_output[0], skip_special_tokens = True)[len(final_string):]
-        # print(f"Generated output: \n{generated_output_string}\n\n")
-        # print(f"Final string: {final_string}")
-        # print(f"Generated output: \n{generated_output_string[len(final_string):]}\n\n")
         
         behavior = Behavior(user_prompt, result.best_string, generated_output_string, "", "")
         with open(output_file, 'a') as f:
