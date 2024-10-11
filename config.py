@@ -44,6 +44,7 @@ mistral_path = "../DIR/Mistral-7B-Instruct-v0.3"
 
 llama3_path = "../DIR/Meta-Llama-3.1-8B-Instruct"
 beaver_cost_path = "../DIR/beaver-7b-v1.0-cost"
+ample_gcg_path = "../DIR/AmpleGCG-plus-llama2-sourced-llama2-7b-chat"
 
 #DATASET PATHS
 advbench = "./data/AdvBench/harmful_behaviors.csv"
