@@ -2,7 +2,7 @@ import config
 import json
 from helper import load_model_and_tokenizer, get_tokens, parse_csv, get_model_path
 from transformers import LlamaForCausalLM
-from behavior import Behavior
+from behavior import RRBehavior
 import argparse
 import rr
 
@@ -20,7 +20,9 @@ def main(input_file, output_file, model, dataset_name, num_behaviors, behavior_s
     torch.manual_seed(rrconfig.seed)
     model, tokenizer = load_model_and_tokenizer(model_path)
     rows = parse_csv(input_file)
-    output_file = output_file.replace('.jsonl', '_0005.jsonl')
+
+    # Get the 5 checkpoint values
+    checkpoint_files = [output_file.replace('.jsonl', f'_{str(checkpoint).replace("0.", "")}.jsonl') for checkpoint in rrconfig.checkpoints]
     for row in rows[behavior_start:behavior_start+num_behaviors]:
         if len(row) != 2:
             continue
@@ -29,10 +31,42 @@ def main(input_file, output_file, model, dataset_name, num_behaviors, behavior_s
         try:
             messages = prefix + user_prompt + suffix
             result = rr.run(model, tokenizer, messages, target, rrconfig)
-            dump_file = output_file.replace('.jsonl', '_dump.jsonl')
-            with open(dump_file, 'a') as d:
-                d.write(json.dumps(result.to_dict()) + '\n')
-            d.close()
+            # Now you have result.best_losses, result.best_strings, and result.distances for all 5 checkpoints.
+            for i, checkpoint in enumerate(rrconfig.checkpoints):
+                best_string = result.best_strings[i]
+                mean_distance = result.distances[i]
+                
+                final_string = prefix + user_prompt + suffix + best_string
+                final_string_ids = get_tokens(final_string, tokenizer, config.device)
+                attention_mask = torch.ones(final_string_ids.shape, device=config.device)
+                
+                # Generate the output based on the final string
+                generated_output = model.generate(
+                    final_string_ids.unsqueeze(0),
+                    attention_mask=attention_mask.unsqueeze(0),
+                    max_length=200,
+                    pad_token_id=tokenizer.pad_token_id,
+                    do_sample=False,
+                    top_p=None,
+                    top_k=None,
+                    temperature=None
+                )
+                generated_output_string = tokenizer.decode(generated_output[0], skip_special_tokens=True)[len(final_string):]
+
+                # Create the Behavior object
+                behavior = RRBehavior(user_prompt, best_string, generated_output_string, "", "", mean_distance)
+                
+                # Write to the corresponding checkpoint output file
+                with open(checkpoint_files[i], 'a') as f:
+                    f.write(json.dumps(behavior.to_dict()) + '\n')
+                f.close()
+
+                # Optionally write to a dump file for each checkpoint
+                dump_file = output_file.replace('.jsonl', f'_dump_{str(checkpoint).replace(".", "")}.jsonl')
+                with open(dump_file, 'a') as d:
+                    d.write(json.dumps(result.to_dict()) + '\n')
+                d.close()
+
         except RuntimeError as e:
             if 'CUDA out of memory' in str(e):
                 print("CUDA out of memory. Clearing cache and retrying...")
@@ -40,25 +74,6 @@ def main(input_file, output_file, model, dataset_name, num_behaviors, behavior_s
                 torch.cuda.empty_cache()
             else:
                 raise e
-        final_string = prefix + user_prompt + suffix + result.best_string
-        final_string_ids = get_tokens(final_string, tokenizer, config.device)
-        attention_mask = torch.ones(final_string_ids.shape, device=config.device)
-        generated_output = model.generate(
-            final_string_ids.unsqueeze(0),
-            attention_mask=attention_mask.unsqueeze(0),
-            max_length=200,
-            pad_token_id=tokenizer.pad_token_id,
-            do_sample=False,
-            top_p=None,
-            top_k=None,
-            temperature=None
-        )
-        generated_output_string = tokenizer.decode(generated_output[0], skip_special_tokens = True)[len(final_string):]
-        
-        behavior = Behavior(user_prompt, result.best_string, generated_output_string, "", "")
-        with open(output_file, 'a') as f:
-            f.write(json.dumps(behavior.to_dict()) + '\n')
-        f.close()
         
 
 

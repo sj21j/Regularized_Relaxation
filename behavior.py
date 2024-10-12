@@ -14,3 +14,22 @@ class Behavior:
             "harmbench_eval": self.harmbench_eval,
             "beaver_cost_score": self.beaver_cost_score
         }
+
+class RRBehavior:
+    def __init__(self, harmful_behavior, suffix, response, harmbench_eval, beaver_cost_score, mean_distance):
+        self.harmful_behavior = harmful_behavior
+        self.suffix = suffix
+        self.response = response
+        self.harmbench_eval = harmbench_eval
+        self.beaver_cost_score = beaver_cost_score
+        self.mean_distance = mean_distance
+    
+    def to_dict(self):
+        return {
+            "harmful_behavior": self.harmful_behavior,
+            "suffix": self.suffix,
+            "response": self.response,
+            "harmbench_eval": self.harmbench_eval,
+            "beaver_cost_score": self.beaver_cost_score,
+            "mean_distance": self.mean_distance
+        }

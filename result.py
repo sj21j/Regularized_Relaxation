@@ -14,3 +14,20 @@ class Result:
             "losses": self.losses,
             "strings": self.strings
         }
+
+class RRResult:
+    def __init__(self, best_losses: List[float], best_strings: List[str], losses: List[float], strings: List[str], distances: List[float]):
+        self.best_losses = best_losses
+        self.best_strings = best_strings
+        self.losses = losses
+        self.strings = strings
+        self.distances = distances
+
+    def to_dict(self):
+        return {
+            "best_losses": self.best_losses,
+            "best_strings": self.best_strings,
+            "losses": self.losses,
+            "strings": self.strings,
+            "distances": self.distances
+        }
