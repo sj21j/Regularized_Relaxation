@@ -46,6 +46,7 @@ def run(model, tokenizer, messages, target, rrconfig):
         # Find closest embeddings after the update
         closest_distances, closest_indices, closest_embeddings = find_closest_embeddings(effective_adv.to(dtype=model.dtype), embed_weights, model.device, rrconfig.allow_non_ascii, non_ascii_toks)
         current_suffix = tokenizer.decode(closest_indices[0])
+        current_mean_distance = closest_distances.mean().detach().cpu().item()
         # Calculate discrete loss using the closest embeddings
         discrete_loss = calc_ce_loss(model, embeddings_user, closest_embeddings, embeddings_target, target_ids)
         discrete_loss_value = discrete_loss.detach().cpu().item()
@@ -57,7 +58,7 @@ def run(model, tokenizer, messages, target, rrconfig):
             if loss_value < checkpoint and best_discrete_losses[i] == float("inf"):
                 best_discrete_losses[i] = discrete_loss_value
                 best_strings[i] = current_suffix
-                distances[i] = closest_distances.mean().detach().cpu().item()  # Update distance as the mean of closest distances
+                distances[i] = current_mean_distance  # Update distance as the mean of closest distances
                 if best_discrete_losses[-1] != float("inf"):
                     return RRResult(best_discrete_losses, best_strings, losses, suffixes, distances)
 
@@ -76,12 +77,13 @@ def run(model, tokenizer, messages, target, rrconfig):
     # Ensure that all checkpoints have values
     last_discrete_loss = losses[-1]
     last_suffix = suffixes[-1]
+    last_distance = distances[-1]
     
     for i in range(len(rrconfig.checkpoints)):
         if best_discrete_losses[i] == float("inf"):  # If a checkpoint was not reached, use last values
             best_discrete_losses[i] = last_discrete_loss
             best_strings[i] = last_suffix
-            distances.append(last_discrete_loss)  # Use the last distance for the missing checkpoint
+            distances[i] = last_distance  # Use the last distance for the missing checkpoint
 
     # Create the result object with the updated values
     return RRResult(best_discrete_losses, best_strings, losses, suffixes, distances)

@@ -2,3 +2,7 @@ transformers==4.41.2
 nanogcg==0.2.1
 protobuf==5.28.2
 sentencepiece==0.2.0
+
+#Install from github
+git+https://github.com/PKU-Alignment/safe-rlhf.git
+git+https://github.com/GraySwanAI/nanoGCG.git
