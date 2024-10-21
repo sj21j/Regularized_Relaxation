@@ -1,18 +1,11 @@
 # **Adversarial Attacks on Large Language Models Using Relaxed Optimization**
 
-![Architecture of Regularized Relaxation](figures/architecture.pdf "Overview of Regularized Relaxation, introducing the regularization term, optimization process, and adversarial suffix generation")
+![Architecture of Regularized Relaxation](figures/architecture.png "Overview of Regularized Relaxation, introducing the regularization term, optimization process, and adversarial suffix generation")
 
 ## 📄 Overview  
 This project explores novel adversarial attack techniques on **large language models (LLMs)** using **relaxed token embedding optimization**. Our approach combines **continuous-space optimization** with a **regularization term**, ultimately producing **discrete adversarial tokens**. These tokens are effective at **jailbreaking** state-of-the-art LLMs, bypassing safety mechanisms, and eliciting harmful or unexpected responses.
 
 The project demonstrates **superior performance** over existing attack methods, achieving higher **attack success rates** while also achieving **upto two orders of magnitude faster runtimes**. Additionally, we analyze the **transferability** of these attacks across multiple models, with **Llama2** and four other open-source LLMs using various datasets.
-
----
-
-## 🚀 Features  
-- **Novel Adversarial Attack:** Optimizes embeddings in continuous space and applies regularization to effectively generate discrete adversarial tokens.  
-- **Transferability Evaluation:** Assesses attack success across **Llama2** and other models using multiple datasets.    
-- **Fast and Efficient:** Two orders of magnitude faster than **gradient-based greedy methods** such as the one proposed by [Zou et al. (2023)](https://arxiv.org/abs/2307.15043).  
 
 ---
 
@@ -82,7 +75,7 @@ Collect all generated .jsonl files and use parse_results.ipynb to get the ASR
 ## 📊 Key Results
 1. Runtime Comparison:
 Our method achieves upto 2 orders of magnitude speedup compared to the SOTA gradient-based attacks.
-![Runtime Comparison of RR vs SOTA optimization methods](figures/runtime_comparison.pdf "Runtime (log scale) of our method compared to SOTA gradient-based attack techniques, averaged over multiple models and datasets.")
+![Runtime Comparison of RR vs SOTA optimization methods](figures/runtime_comparison.png "Runtime (log scale) of our method compared to SOTA gradient-based attack techniques, averaged over multiple models and datasets.")
 
 2. Attack Success Rate:
 Outperforms all other methods in success rate across multiple models and datasets.
