@@ -1,7 +1,7 @@
 # **Adversarial Attacks on Large Language Models Using Relaxed Optimization**
 
 ![Architecture of Regularized Relaxation](figures/architecture.png "Overview of Regularized Relaxation, introducing the regularization term, optimization process, and adversarial suffix generation")
-
+### Update: Our paper is now available [here](https://arxiv.org/abs/2410.19160)!
 ## 📄 Overview  
 This project explores novel adversarial attack techniques on **large language models (LLMs)** using **relaxed token embedding optimization**. Our approach combines **continuous-space optimization** with a **regularization term**, ultimately producing **discrete adversarial tokens**. These tokens are effective at **jailbreaking** state-of-the-art LLMs, bypassing safety mechanisms, and eliciting harmful or unexpected responses.
 
